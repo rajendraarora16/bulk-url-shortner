@@ -1,5 +1,5 @@
 # Bulk URL Shortner
-using Google shortner API
+Short multiple url in just single click away! hell yeah!
 
 # [DEMO](https://rajendraarora16.github.io/bulk-url-shortner/bulkUrlShortner.html)
 
