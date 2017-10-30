@@ -1,0 +1,104 @@
+<html>
+    <head>
+        <title>Bulk URL shortner</title>
+        <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,400italic,300italic,300,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+        <!-- Global CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">   
+        <!-- Plugins CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <!-- Google Short URL -->
+        <script type="text/javascript">
+            function generateShortUrl() {
+                
+                $("#generate-short-URL").text("");
+
+                var lines = $('#long-url').val().split(/\n/);
+                var longLinks = [];
+                for (var i=0; i < lines.length; i++) {
+                    // only push this line if it contains a non whitespace character.
+                    if (/\S/.test(lines[i])) {
+                        longLinks.push($.trim(lines[i]));
+                    }
+                }
+
+                for(var i = 0; i < longLinks.length; i++) {
+                    var countURL = 0;
+                    $.ajax({
+                        async: true,
+                        url: 'https://www.googleapis.com/urlshortener/v1/url?shortUrl=http://goo.gl/fbsS&key=AIzaSyC4bjESDcXYSZrfLwXyhsAp_Fwv83o4v-8',
+                        type: 'POST',
+                        contentType: 'application/json; charset=utf-8',
+                        data: '{ longUrl: "'+longLinks[i]+'"}',
+                        dataType: 'json',
+                        beforeSend: function(){
+                            $("#long-url").css({ 'background': '#e8e8e8' });
+                            $("#generateShortURL").text("Generating...")
+                        },
+                        complete : function() {
+                            $("#long-url").css({ 'background': '#fff' });
+                            $("#generateShortURL").text("Generate shortened URL")
+                        },
+                        success: function(response) {
+                            ++countURL;
+                            $("#generate-short-URL").append("<tr><th scope='row'>"+countURL+"</th><td>"+response["longUrl"]+"</td><td><a href="+response["id"]+" target='_blank'>"+response["id"]+"</a></td></tr>");
+                        }
+                    });
+                }
+            }    
+        </script>
+        <style type="text/css">
+            .center-div{
+                height: 100%;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="center-div">
+            <h1><a class="link-mask" data-toggle="modal" data-target="#short_url_modal" href="#">Bulk URL Shortner</a></h1>
+            <p>Made by <a href="https://www.rajendraarora.com">Rajendra Arora</a></p>
+        </div>
+        <!-- Modal for Shorten long URL -->
+ 	<div class="modal fade" id="short_url_modal" role="dialog">
+        <div class="modal-dialog">
+        
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Bulk URL Shortner</h4>
+                    <p>Powered by Google api.</p>
+                </div>
+                <div class="modal-body">
+                    <strong>Long URL:</strong> <br/><textarea id="long-url" class="long-url-input" rows="5" style="width:500px;" placeholder="Please enter one URL in new line" onFocus="this.select()" ></textarea>
+                    <br/><br/>
+                    <div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Long URL</th>
+                                    <th>Short URL</th>
+                                </tr>
+                            </thead>
+                            <tbody id="generate-short-URL">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="generateShortURL" type="button" class="btn btn-default pull-left" onclick="generateShortUrl();">Generate shortened URL</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+                
+            </div>
+        </div>
+    </body>
+</html>
